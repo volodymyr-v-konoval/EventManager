@@ -16,12 +16,28 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
-from events.views import EventAPIView
+from rest_framework import routers
+from drf_spectacular.views import (
+    SpectacularAPIView, 
+    SpectacularRedocView,
+    SpectacularSwaggerView
+)
+from events.views import EventViewSet, RegistrationAPIView
+
+
+router = routers.DefaultRouter()
+router.register(r'events', EventViewSet)
+
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('api/v1/eventlist/', EventAPIView.as_view()),
+    path('api/v1/session-auth/', include('rest_framework.urls')),
+    path('api/v1/registration/', RegistrationAPIView.as_view(), name='register'),
+    path('api/v1/', include(router.urls)),
+    path('api/v1/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/v1/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/v1/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]

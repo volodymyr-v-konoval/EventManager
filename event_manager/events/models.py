@@ -10,7 +10,7 @@ class Event(models.Model):
 
     title = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
-    author = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='users_events'
@@ -18,7 +18,7 @@ class Event(models.Model):
     description = models.TextField(blank=True)
     date = models.DateTimeField()
     created = models.DateTimeField(auto_now_add=True)
-    loction = models.CharField(max_length=250)
+    location = models.CharField(max_length=250)
     organizer = models.CharField(max_length=250)
     status = models.CharField(
         max_length=2,
