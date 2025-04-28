@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import Event
+from .models import Event, EventRegistration
 
 
 User = get_user_model()
@@ -31,3 +31,10 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class EventRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventRegistration
+        fields = ['id', 'user', 'event', 'registered_at']
+        read_only_fields = ['id', 'registered_at', 'user']

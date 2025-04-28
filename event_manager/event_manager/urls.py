@@ -24,13 +24,14 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView
 )
-from events.views import EventViewSet, RegistrationAPIView
+from events.views import (EventViewSet, 
+                          RegistrationAPIView, 
+                          EventRegistrationViewSet) 
 
 
 router = routers.DefaultRouter()
 router.register(r'events', EventViewSet)
-
-
+router.register(r'event-registrations', EventRegistrationViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

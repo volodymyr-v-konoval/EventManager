@@ -27,10 +27,27 @@ class Event(models.Model):
     )
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['-date', 'created']
         indexes = [
-            models.Index(fields=['-date']),
+            models.Index(fields=['date', 'created']),
         ]
 
     def __str__(self):
         return self.title
+
+
+class EventRegistration(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='event_registrations'
+    )
+    event = models.ForeignKey(
+        'events.Event',
+        on_delete=models.CASCADE,
+        related_name='registrations'
+    )
+    registered_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'event')
