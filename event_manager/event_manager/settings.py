@@ -156,3 +156,7 @@ REST_FRAMEWORK = {
 # DEFAULT_FROM_EMAIL = 'you_email@example.com'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"

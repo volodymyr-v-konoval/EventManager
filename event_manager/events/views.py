@@ -12,6 +12,8 @@ from .permissions import (IsAdminOrOwner,
 from .serializers import (EventSerializer, 
                           UserSerializer,
                           EventRegistrationSerializer)
+from .tasks import send_registration_email
+
 
 
 class EventViewSet(PermissionByMethodMixin, viewsets.ModelViewSet):
@@ -26,6 +28,16 @@ class EventViewSet(PermissionByMethodMixin, viewsets.ModelViewSet):
             'PATCH': [IsOwnerOrReadOnly],
             'DELETE': [IsAdminOrOwner],
         }
+    
+    filter_backends = [DjangoFilterBackend, 
+                       filters.SearchFilter,
+                       filters.OrderingFilter]
+    
+    filterset_fields = ['title', 'date', 'location', 'status', 'organizer']
+    search_fields = ['title', 'description', 'location', 'organizer']
+    ordering_fields = ['date', 'created']
+    ordering = ['date']
+
 
 class RegistrationAPIView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -47,38 +59,11 @@ class EventRegistrationViewSet(PermissionByMethodMixin, viewsets.ModelViewSet):
     def perform_create(self, serializer):
         registration = serializer.save(user=self.request.user)
 
-        user = registration.user
-        event = registration.event
-
-        subject = f'Registration confirmation for "{event.title}"'
-        message = f'''Hello, {user.username}!
-                    You have successfully registered for the event: Title: {event.title}.
-                    Organizer: {event.organizer}.
-                    Date & Time: {event.date.strftime('%d.%m.%Y %H.%M')}.
-                    Location: {event.location}.
-
-                    Thank you for choosing our service!'''
-        
-        recipient_list = [user.email]
-
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=None,
-            recipient_list=recipient_list,
-            fail_silently=False,
+        send_registration_email.delay(
+            user_email=registration.user.email,
+            username=registration.user.username,
+            event_title=registration.event.title,
+            event_date=registration.event.date.strftime('%d.%m.%Y %H:%M'),
+            event_location=registration.event.location,
+            event_organizer=registration.event.organizer
         )
-
-
-class EventViewSet(viewsets.ModelViewSet):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
-
-    filter_backends = [DjangoFilterBackend, 
-                       filters.SearchFilter,
-                       filters.OrderingFilter]
-    
-    filterset_fields = ['title', 'date', 'location', 'status', 'organizer']
-    search_fields = ['title', 'description', 'location', 'organizer']
-    ordering_fields = ['date', 'created']
-    ordering = ['date']

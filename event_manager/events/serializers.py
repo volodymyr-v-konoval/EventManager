@@ -38,3 +38,13 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
         model = EventRegistration
         fields = ['id', 'user', 'event', 'registered_at']
         read_only_fields = ['id', 'registered_at', 'user']
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        event = attrs.get('event')
+
+        if EventRegistration.objects.filter(user=user, event=event).exists():
+            raise serializers.ValidationError(
+                'You are already registrated for the event!'
+            )
+        return attrs
