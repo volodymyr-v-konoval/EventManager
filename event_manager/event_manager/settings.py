@@ -37,9 +37,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "events.apps.EventsConfig",
     "rest_framework",
     'drf_spectacular',
+    'django_filters',
+    'events.apps.EventsConfig',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,13 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
     ],
 }
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.example.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'your_email@example.com'
+# EMAIL_HOST_PASSWORD = 'your_password'
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'you_email@example.com'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

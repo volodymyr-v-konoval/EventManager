@@ -1,3 +1,4 @@
+from django.core.mail import send_mail
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, generics, filters
 from rest_framework.permissions import (AllowAny,
@@ -44,7 +45,29 @@ class EventRegistrationViewSet(PermissionByMethodMixin, viewsets.ModelViewSet):
         }
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        registration = serializer.save(user=self.request.user)
+
+        user = registration.user
+        event = registration.event
+
+        subject = f'Registration confirmation for "{event.title}"'
+        message = f'''Hello, {user.username}!
+                    You have successfully registered for the event: Title: {event.title}.
+                    Organizer: {event.organizer}.
+                    Date & Time: {event.date.strftime('%d.%m.%Y %H.%M')}.
+                    Location: {event.location}.
+
+                    Thank you for choosing our service!'''
+        
+        recipient_list = [user.email]
+
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=None,
+            recipient_list=recipient_list,
+            fail_silently=False,
+        )
 
 
 class EventViewSet(viewsets.ModelViewSet):

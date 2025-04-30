@@ -9,7 +9,8 @@ class Event(models.Model):
         OFFLINE = 'OF', 'Offline'
 
     title = models.CharField(max_length=250)
-    slug = models.SlugField(max_length=250)
+    slug = models.SlugField(max_length=250, 
+                            unique_for_date='date')
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
